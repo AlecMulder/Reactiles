@@ -21,22 +21,22 @@ void draw() {
 void webSocketServerEvent(String msg) {
   if (msg.indexOf("{ \"code\"")!=-1) {
     //println("msg = " + msg);
-    String[] m = match(msg, "\\{(.*?)\\},");
-    //println("array length: " + m.length);
-    //for (int i = 1; i<m.length; i++) {
-    //  println("Found '" + m[i] + "' inside the tag.");
-    //}
-    JSONObject json = parseJSONObject(m[0]);
-    if (json == null) {
-      println("JSONArray could not be parsed");
-    } else {
-      println("Code " + json.getInt("code") +  " found");
-      matrices.get(0).update(
-        json.getFloat("x"), 
-        json.getFloat("y"), 
-        json.getFloat("unit"), 
-        json.getFloat("angle")
-        );
+    String[][] m = matchAll(msg, "\\{(.*?)\\},");
+    println("array length: " + m.length);
+    for (int i = 0; i<m.length; i++) {
+      //println("Found '" + m[i][1] + "' inside the tag.");
+      JSONObject json = parseJSONObject(m[i][0]);
+      if (json == null) {
+        println("JSONArray could not be parsed");
+      } else {
+        //println(millis() + "Code " + json.getInt("code") +  " found");
+        matrices.get(0).update(
+          json.getFloat("x"), 
+          json.getFloat("y"), 
+          json.getFloat("unit"), 
+          json.getFloat("angle")
+          );
+      }
     }
   }
 }

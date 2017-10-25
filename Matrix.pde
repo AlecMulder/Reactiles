@@ -27,7 +27,7 @@ public class Matrix {
     float _xMapped = mapX(_x);
     x = _xMapped;
     if (_yMapped>numStrips/2*stripSpacing && _yMapped<height-numStrips/2*stripSpacing) {
-      println("Too close to the top or bottom - " + _y);
+      //println("Too close to the top or bottom - " + _y);
       y = _yMapped;
     }
     unit = _unit;
