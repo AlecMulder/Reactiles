@@ -22,6 +22,7 @@ public class OPC implements Runnable
   byte firmwareConfig;
   String colorCorrection;
   boolean enableShowLocations;
+  boolean packetFull=false;
 
   OPC(PApplet parent, String host, int port)
   {
@@ -254,8 +255,11 @@ public class OPC implements Runnable
         pixels[pixelLocation] = 0xFFFFFF ^ pixel;
       }
     }
-
-    writePixels();
+    //println("Packet Data: " + packetData.length);
+    
+    packetFull=true;
+    
+   
 
     if (enableShowLocations) {
       updatePixels();
@@ -318,8 +322,11 @@ public class OPC implements Runnable
     }
 
     try {
+      //println("write");
       output.write(packetData);
+      //println("write done" +millis());
     } catch (Exception e) {
+      println("Dispose");
       dispose();
     }
   }
@@ -346,6 +353,8 @@ public class OPC implements Runnable
         try {              // Make one!
           socket = new Socket(host, port);
           socket.setTcpNoDelay(true);
+          socket.setSendBufferSize(512);
+          println(socket.getSendBufferSize());
           pending = socket.getOutputStream(); // Avoid race condition...
           println("Connected to OPC server");
           sendColorCorrectionPacket();        // These write to 'pending'
@@ -357,11 +366,17 @@ public class OPC implements Runnable
         } catch (IOException e) {
           dispose();
         }
+      }else if(packetFull){
+        
+        writePixels(); 
+        packetFull=false;
       }
+
+      
 
       // Pause thread to avoid massive CPU load
       try {
-        Thread.sleep(500);
+        Thread.sleep(16);
       }
       catch(InterruptedException e) {
       }
